@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Global Wealth and Adult Literacy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <main class="page-shell">
+        <section class="hero" aria-labelledby="page-title">
+            <div>
+                <p class="eyebrow">Coursework visualization</p>
+                <h1 id="page-title">How does adult literacy vary with wealth across countries over time?</h1>
+                <p class="subtitle">
+                    Explore whether countries with higher International Wealth Index scores also tend to report higher adult literacy rates.
+                </p>
+            </div>
+            <div class="question-card">
+                <span class="question-label">Research focus</span>
+                <p>
+                    A movement from the lower-left to the upper-right indicates a positive relationship between wealth and literacy.
+                    Countries far from the trend line may be performing better or worse than expected.
+                </p>
+            </div>
+        </section>
+
+        <section class="explanation-section is-open" aria-label="Visualization explanation">
+            <button id="explanationToggle" class="explanation-toggle" type="button" aria-expanded="true" aria-controls="explanationContent">
+                <span>Chart explanation</span>
+                <span class="toggle-icon" aria-hidden="true"></span>
+            </button>
+
+            <div id="explanationContent" class="explanation-content">
+                <div class="explanation-grid">
+                    <article class="description-panel">
+                        <h2 id="descriptionTitle">What This Chart Shows</h2>
+                        <div id="descriptionBody"></div>
+                    </article>
+
+                    <article class="description-panel">
+                        <h2>How To Read It</h2>
+                        <ul id="readList"></ul>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="visualization-panel" aria-label="Interactive chart">
+            <div class="panel-header">
+                <div>
+                    <h2 id="chartHeading">Wealth and Literacy Relationship</h2>
+                    <p id="chartHelper">
+                        Use the year slider and world-region filter to compare patterns, identify outliers, and see how the
+                        relationship changes over time.
+                    </p>
+                </div>
+                <div class="stat-pill" aria-live="polite">
+                    <span id="countryCount">0</span>
+                    <small id="countLabel">countries shown</small>
+                </div>
+            </div>
+
+            <div class="mode-switcher" aria-label="Visualization mode">
+                <button class="mode-button is-active" type="button" data-mode="scatter">Scatter Plot</button>
+                <button class="mode-button" type="button" data-mode="box">Box Plot</button>
+            </div>
+
+            <div class="controls" aria-label="Chart controls">
+                <label class="control-group" for="yearSlider">
+                    <span>Year <strong id="yearValue">-</strong></span>
+                    <input type="range" id="yearSlider" min="1999" max="2023" step="1" value="2023" />
+                </label>
+
+                <label class="control-group" for="regionFilter">
+                    <span>World region</span>
+                    <select id="regionFilter">
+                        <option value="All">All regions</option>
+                    </select>
+                </label>
+
+                <label class="control-group country-search-control" for="countrySearch">
+                    <span>Highlight country</span>
+                    <input id="countrySearch" list="countryOptions" type="search" placeholder="Type a country name" />
+                    <datalist id="countryOptions"></datalist>
+                </label>
+
+                <button id="resetButton" type="button">Reset</button>
+            </div>
+
+            <div id="medianSummary" class="median-summary is-hidden" aria-live="polite">
+                <strong>Median literacy values</strong>
+                <div id="medianValues" class="median-values"></div>
+            </div>
+
+            <div class="chart-wrap">
+                <div id="chart" role="img" aria-label="Scatter plot of wealth and adult literacy"></div>
+                <aside id="legend" class="legend" aria-label="Region legend"></aside>
+            </div>
+
+            <div id="emptyState" class="empty-state" hidden>
+                Not enough valid countries are available for this year and region selection.
+            </div>
+
+            <div class="trend-note">
+                <strong id="modeNoteLabel">Trend line:</strong>
+                <span id="trendSummary">The dashed line updates to show the overall wealth-literacy relationship in the current selection.</span>
+            </div>
+        </section>
+
+        <section class="insights-panel" aria-live="polite">
+            <h2>Key Insights</h2>
+            <div id="insights" class="insight-list"></div>
+        </section>
+    </main>
+
+    <div id="tooltip" class="tooltip" role="tooltip"></div>
+    <script src="script.js"></script>
+</body>
+</html>
