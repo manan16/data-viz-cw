@@ -44,11 +44,11 @@ const modeCopy = {
     },
     box: {
         heading: "Literacy Distribution by Wealth Group",
-        helper: "Compare low-, medium-, and high-wealth country groups for the selected year and region.",
+        helper: "Compare low-wealth, medium-wealth, and high-wealth country groups for the selected year and region.",
         countLabel: "countries grouped",
         noteLabel: "Distribution note:",
         description: [
-            "This box plot compares the distribution of adult literacy rates across low-, medium-, and high-wealth country groups in the selected year.",
+            "This box plot compares the distribution of adult literacy rates across low-wealth, medium-wealth, and high-wealth country groups in the selected year.",
             "It helps reveal differences in median literacy, variability, and outliers across wealth bands rather than focusing only on individual country positions."
         ],
         read: [
@@ -89,9 +89,9 @@ const elements = {
     insights: d3.select("#insights")
 };
 
-const margin = { top: 52, right: 24, bottom: 70, left: 74 };
-const width = 850 - margin.left - margin.right;
-const height = 540 - margin.top - margin.bottom;
+const margin = { top: 58, right: 36, bottom: 78, left: 82 };
+const width = 1120 - margin.left - margin.right;
+const height = 660 - margin.top - margin.bottom;
 const transitionDuration = 550;
 const wealthGroups = [
     { id: "Low wealth", min: 0, max: 33 },
@@ -105,7 +105,7 @@ const regionColor = d3.scaleOrdinal()
 
 const requestedMode = new URLSearchParams(window.location.search).get("mode");
 const state = {
-    mode: ["scatter", "box"].includes(requestedMode) ? requestedMode : "scatter",
+    mode: ["scatter", "box"].includes(requestedMode) ? requestedMode : "box",
     data: [],
     initialYear: null,
     focusRegion: null,
@@ -183,14 +183,14 @@ function initialiseControls() {
         update();
     });
     elements.resetButton.on("click", () => {
-        state.mode = "scatter";
+        state.mode = "box";
         state.focusRegion = null;
         state.highlightedCountry = "";
         state.focusedWealthGroup = null;
         elements.countrySearch.property("value", "");
         history.replaceState(null, "", window.location.pathname);
         elements.regionFilter.property("value", "All");
-        elements.yearSlider.property("value", state.initialYear);
+        elements.yearSlider.property("value", getBestBoxYear("All"));
         update();
     });
 }
@@ -201,6 +201,7 @@ function update() {
     const filtered = filterByYearRegion(year, region);
 
     elements.yearValue.text(year);
+    updateSliderProgress();
     updateModeUi();
     updateDescription();
     clearChart();
@@ -329,7 +330,7 @@ function renderBoxPlot(filtered, year, region) {
                 .attr("y", height / 2)
                 .attr("text-anchor", "middle")
                 .attr("class", "start-end-label")
-                .text(`${d.count} country${d.count === 1 ? "" : "ies"}`);
+                .text(`${d.count} ${d.count === 1 ? "country" : "countries"}`);
             return;
         }
 
@@ -373,7 +374,7 @@ function renderBoxPlot(filtered, year, region) {
             .attr("cx", (_, i) => center + ((i % 5) - 2) * 5)
             .attr("cy", p => yScale(p.literacy))
             .attr("r", 0)
-            .on("mouseenter", (event, p) => showTooltip(event, `<strong>${p.country}</strong>Outlier in ${d.id}<br>Year: ${p.year}<br>Wealth IWI: ${formatNumber(p.wealth)}<br>Adult literacy: ${formatNumber(p.literacy)}%`))
+            .on("mouseenter", (event, p) => showTooltip(event, outlierTooltip(p, d.id)))
             .on("mousemove", moveTooltip)
             .on("mouseleave", hideTooltip)
             .transition().duration(transitionDuration)
@@ -499,6 +500,14 @@ function updateModeUi() {
     elements.countrySearchControl.classed("is-hidden", state.mode !== "scatter");
 }
 
+function updateSliderProgress() {
+    const min = Number(elements.yearSlider.attr("min"));
+    const max = Number(elements.yearSlider.attr("max"));
+    const value = Number(elements.yearSlider.property("value"));
+    const progress = max > min ? ((value - min) / (max - min)) * 100 : 100;
+    elements.yearSlider.style("--slider-progress", `${Math.max(0, Math.min(100, progress))}%`);
+}
+
 function toggleExplanation() {
     const isOpen = elements.explanationSection.classed("is-open");
     elements.explanationSection.classed("is-open", !isOpen);
@@ -598,9 +607,9 @@ function renderRegionLegend(regions) {
 function renderBoxLegend() {
     elements.legend.html(`
         <div class="legend-title">Box plot</div>
-        <div class="legend-item"><span class="legend-swatch" style="background:#f3effc;border:1px solid #9b86d9"></span><span>Q1 to Q3</span></div>
-        <div class="legend-item"><span class="legend-swatch" style="background:#8270bd"></span><span>Median and whiskers</span></div>
-        <div class="legend-item"><span class="legend-swatch" style="background:#d7855f"></span><span>Outliers</span></div>
+        <div class="legend-item"><span class="legend-swatch" style="background:rgba(124, 92, 255, 0.15);border:1px solid #7c5cff"></span><span>Q1 to Q3</span></div>
+        <div class="legend-item"><span class="legend-swatch" style="background:#3b4cca"></span><span>Median</span></div>
+        <div class="legend-item"><span class="legend-swatch" style="background:#e18652"></span><span>Outliers</span></div>
     `);
 }
 
@@ -655,12 +664,44 @@ function isHighlightedCountry(d) {
 
 function scatterTooltip(d, regression) {
     const expected = regression ? regression.slope * d.wealth + regression.intercept : null;
-    const residualText = Number.isFinite(expected) ? `<br>Against trend: ${formatNumber(d.literacy - expected)} pts` : "";
-    return `<strong>${d.country}</strong>Region: ${d.region}<br>Year: ${d.year}<br>Wealth IWI: ${formatNumber(d.wealth)}<br>Adult literacy: ${formatNumber(d.literacy)}%<br>Source areas averaged: ${d.sourceAreas}${residualText}`;
+    const rows = [
+        ["Region", d.region],
+        ["Year", d.year],
+        ["Wealth IWI", formatNumber(d.wealth)],
+        ["Adult literacy", `${formatNumber(d.literacy)}%`],
+        ["Source areas", d.sourceAreas]
+    ];
+    if (Number.isFinite(expected)) rows.push(["Against trend", `${formatNumber(d.literacy - expected)} pts`]);
+    return tooltipTemplate(d.country, rows);
 }
 
 function boxTooltip(d) {
-    return `<strong>${d.id}</strong>Countries: ${d.count}<br>Minimum: ${formatNumber(d.min)}%<br>Q1: ${formatNumber(d.q1)}%<br>Median: ${formatNumber(d.median)}%<br>Q3: ${formatNumber(d.q3)}%<br>Maximum: ${formatNumber(d.max)}%`;
+    return tooltipTemplate(d.id, [
+        ["Countries", d.count],
+        ["Min non-outlier", `${formatNumber(d.min)}%`],
+        ["Q1", `${formatNumber(d.q1)}%`],
+        ["Median", `${formatNumber(d.median)}%`],
+        ["Q3", `${formatNumber(d.q3)}%`],
+        ["Max non-outlier", `${formatNumber(d.max)}%`]
+    ]);
+}
+
+function outlierTooltip(d, group) {
+    return tooltipTemplate(d.country, [
+        ["Outlier group", group],
+        ["Year", d.year],
+        ["Wealth IWI", formatNumber(d.wealth)],
+        ["Adult literacy", `${formatNumber(d.literacy)}%`]
+    ]);
+}
+
+function tooltipTemplate(title, rows) {
+    return `
+        <strong>${title}</strong>
+        <div class="tooltip-rows">
+            ${rows.map(([label, value]) => `<div class="tooltip-row"><span>${label}</span><b>${value}</b></div>`).join("")}
+        </div>
+    `;
 }
 
 function showTooltip(event, html) {
@@ -669,7 +710,20 @@ function showTooltip(event, html) {
 }
 
 function moveTooltip(event) {
-    elements.tooltip.style("left", `${event.pageX + 14}px`).style("top", `${event.pageY - 18}px`);
+    const node = elements.tooltip.node();
+    const offset = 16;
+    const width = node?.offsetWidth || 300;
+    const height = node?.offsetHeight || 180;
+    const pageLeft = event.pageX + offset;
+    const pageTop = event.pageY - 18;
+    const maxLeft = window.scrollX + window.innerWidth - width - 12;
+    const minLeft = window.scrollX + 12;
+    const maxTop = window.scrollY + window.innerHeight - height - 12;
+    const minTop = window.scrollY + 12;
+
+    elements.tooltip
+        .style("left", `${Math.max(minLeft, Math.min(maxLeft, pageLeft))}px`)
+        .style("top", `${Math.max(minTop, Math.min(maxTop, pageTop))}px`);
 }
 
 function hideTooltip() {

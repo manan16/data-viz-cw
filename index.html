@@ -13,7 +13,7 @@
 <body>
     <main class="page-shell">
         <section class="hero" aria-labelledby="page-title">
-            <div>
+            <div class="hero-copy">
                 <p class="eyebrow">Coursework visualization</p>
                 <h1 id="page-title">How does adult literacy vary with wealth across countries over time?</h1>
                 <p class="subtitle">
@@ -65,26 +65,30 @@
                 </div>
             </div>
 
-            <div class="mode-switcher" aria-label="Visualization mode">
-                <button class="mode-button is-active" type="button" data-mode="scatter">Scatter Plot</button>
-                <button class="mode-button" type="button" data-mode="box">Box Plot</button>
-            </div>
-
             <div class="controls" aria-label="Chart controls">
                 <label class="control-group" for="yearSlider">
-                    <span>Year <strong id="yearValue">-</strong></span>
+                    <span class="control-label">Selected year</span>
+                    <span class="year-badge">Year <strong id="yearValue">-</strong></span>
                     <input type="range" id="yearSlider" min="1999" max="2023" step="1" value="2023" />
                 </label>
 
                 <label class="control-group" for="regionFilter">
-                    <span>World region</span>
+                    <span class="control-label">World region</span>
                     <select id="regionFilter">
                         <option value="All">All regions</option>
                     </select>
                 </label>
 
+                <div class="mode-switcher" aria-label="Visualization mode">
+                    <span class="control-label">View mode</span>
+                    <div class="mode-options">
+                        <button class="mode-button is-active" type="button" data-mode="scatter">Scatter Plot</button>
+                        <button class="mode-button" type="button" data-mode="box">Box Plot</button>
+                    </div>
+                </div>
+
                 <label class="control-group country-search-control" for="countrySearch">
-                    <span>Highlight country</span>
+                    <span class="control-label">Highlight country</span>
                     <input id="countrySearch" list="countryOptions" type="search" placeholder="Type a country name" />
                     <datalist id="countryOptions"></datalist>
                 </label>
@@ -97,24 +101,28 @@
                 <div id="medianValues" class="median-values"></div>
             </div>
 
-            <div class="chart-wrap">
-                <div id="chart" role="img" aria-label="Scatter plot of wealth and adult literacy"></div>
-                <aside id="legend" class="legend" aria-label="Region legend"></aside>
+            <div class="analysis-workspace">
+                <div class="chart-column">
+                    <div id="chart" role="img" aria-label="Scatter plot of wealth and adult literacy"></div>
+                    <div id="legend" class="legend" aria-label="Region legend"></div>
+                </div>
             </div>
 
             <div id="emptyState" class="empty-state" hidden>
                 Not enough valid countries are available for this year and region selection.
             </div>
 
-            <div class="trend-note">
-                <strong id="modeNoteLabel">Trend line:</strong>
-                <span id="trendSummary">The dashed line updates to show the overall wealth-literacy relationship in the current selection.</span>
-            </div>
-        </section>
+            <aside class="details-panel" aria-label="Chart details and key insights">
+                <div class="trend-note">
+                    <strong id="modeNoteLabel">Trend line:</strong>
+                    <span id="trendSummary">The dashed line updates to show the overall wealth-literacy relationship in the current selection.</span>
+                </div>
 
-        <section class="insights-panel" aria-live="polite">
-            <h2>Key Insights</h2>
-            <div id="insights" class="insight-list"></div>
+                <section class="insights-panel" aria-live="polite">
+                    <h2>Key Insights</h2>
+                    <div id="insights" class="insight-list"></div>
+                </section>
+            </aside>
         </section>
     </main>
 
