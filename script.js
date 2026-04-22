@@ -118,7 +118,7 @@ const svg = elements.chart.append("svg")
     .attr("preserveAspectRatio", "xMidYMid meet");
 const chart = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
 
-d3.csv("final_dataset.csv", parseRow)
+d3.csv("data/final_dataset.csv", parseRow)
     .then(rows => {
         state.data = aggregateCountryYears(rows.filter(isValidRow));
         state.initialYear = getInitialYear(state.data);
@@ -129,7 +129,7 @@ d3.csv("final_dataset.csv", parseRow)
         console.error(error);
         elements.emptyState
             .property("hidden", false)
-            .text("The CSV file could not be loaded. Run this page with a local static server and keep final_dataset.csv beside index.html.");
+            .text("The CSV file could not be loaded. Run this page with a local static server and keep data/final_dataset.csv available.");
     });
 
 function initialiseControls() {

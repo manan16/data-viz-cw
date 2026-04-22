@@ -26,11 +26,11 @@ The dashboard compares adult literacy rates with International Wealth Index scor
 - `index.html` - page structure and dashboard layout
 - `style.css` - typography, card hierarchy, controls, chart styling, and responsive layout
 - `script.js` - D3 data loading, filtering, chart rendering, interactions, tooltips, and insight text
-- `final_dataset.csv` - cleaned dataset used by the dashboard
+- `data/final_dataset.csv` - cleaned dataset used by the dashboard
 - `clean_data.py` - preprocessing script used to create the final dataset
-- `world-education-data.csv` - original education dataset containing adult literacy and other education indicators
-- `GDL-Mean-International-Wealth-Index-(IWI)-score-of-region-data.csv` - original International Wealth Index dataset
-- `boxplot_sketch.png`, `scatter_sketch.png`, `map_sketch.png` - concept sketches used during design development
+- `data/world-education-data.csv` - original education dataset containing adult literacy and other education indicators
+- `data/GDL-Mean-International-Wealth-Index-(IWI)-score-of-region-data.csv` - original International Wealth Index dataset
+- `images/boxplot_sketch.png`, `images/scatter_sketch.png`, `images/map_sketch.png` - concept sketches used during design development
 
 ## Concept Sketches
 
@@ -38,28 +38,28 @@ The project began with three visual concept sketches. These were used to compare
 
 ### Box Plot Concept
 
-![Box plot concept sketch](boxplot_sketch.png)
+![Box plot concept sketch](images/boxplot_sketch.png)
 
 The box plot sketch became the primary direction because it clearly compares literacy distributions across low-, medium-, and high-wealth groups. This supports the final dashboard's emphasis on median differences, spread, and outliers.
 
 ### Scatter Plot Concept
 
-![Scatter plot concept sketch](scatter_sketch.png)
+![Scatter plot concept sketch](images/scatter_sketch.png)
 
 The scatter plot concept was retained as a secondary exploratory view. It is useful for showing individual countries, the overall wealth-literacy trend, and countries that sit above or below the expected relationship.
 
 ### Map Concept
 
-![Map concept sketch](map_sketch.png)
+![Map concept sketch](images/map_sketch.png)
 
 The map concept was considered for geographic storytelling, but it was not used as the main visualization because the research question focuses more directly on the relationship between wealth and literacy than on spatial location alone.
 
 ## Dataset Preparation
 
-The dashboard uses `final_dataset.csv`, which was created by cleaning and merging two original datasets:
+The dashboard uses `data/final_dataset.csv`, which was created by cleaning and merging two original datasets:
 
-1. `world-education-data.csv`
-2. `GDL-Mean-International-Wealth-Index-(IWI)-score-of-region-data.csv`
+1. `data/world-education-data.csv`
+2. `data/GDL-Mean-International-Wealth-Index-(IWI)-score-of-region-data.csv`
 
 The preprocessing is handled by `clean_data.py`.
 
@@ -97,7 +97,7 @@ After both datasets are cleaned:
 - missing regions are labelled as `Unknown`
 - the final output is sorted by `year`, `wealth_iwi`, and `country`
 
-The resulting `final_dataset.csv` contains:
+The resulting `data/final_dataset.csv` contains:
 
 - `country`
 - `region`
@@ -115,7 +115,7 @@ python3 clean_data.py
 
 ## How To Run
 
-Because the dashboard loads `final_dataset.csv`, open it through a local static server rather than directly from the file system.
+Because the dashboard loads `data/final_dataset.csv`, open it through a local static server rather than directly from the file system.
 
 From this folder:
 

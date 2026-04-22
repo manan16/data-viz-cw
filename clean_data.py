@@ -5,9 +5,9 @@ import re
 # =========================================================
 # FILE PATHS
 # =========================================================
-education_path = "world-education-data.csv"
-wealth_path = "GDL-Mean-International-Wealth-Index-(IWI)-score-of-region-data.csv"
-output_path = "final_dataset.csv"
+education_path = "data/world-education-data.csv"
+wealth_path = "data/GDL-Mean-International-Wealth-Index-(IWI)-score-of-region-data.csv"
+output_path = "data/final_dataset.csv"
 
 # =========================================================
 # LOAD DATA
